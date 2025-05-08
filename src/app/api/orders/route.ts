@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
 export async function GET(request: Request) {
   try {
-    await connectDB();
+    await connectToDatabase();
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') || 'open';
 
@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
 export async function POST() {
   try {
-    await connectDB();
+    await connectToDatabase();
 
     // Son adisyon numarasını bul
     const lastOrder = await Order.findOne({}, {}, { sort: { 'orderNumber': -1 } });

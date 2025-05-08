@@ -1,15 +1,15 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
+import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
 export async function GET(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = await params;
   
   try {
-    await connectDB();
+    await connectToDatabase();
     const order = await Order.findById(id).populate('items.product');
     
     if (!order) {
@@ -36,7 +36,7 @@ export async function PATCH(
   const { id } = await context.params;
   
   try {
-    await connectDB();
+    await connectToDatabase();
     const body = await request.json();
     
     const order = await Order.findByIdAndUpdate(

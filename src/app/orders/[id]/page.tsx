@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Product {
@@ -34,7 +34,7 @@ export default function OrderPage({ params }: { params: { id: string } }) {
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'creditCard'>('cash');
   const router = useRouter();
 
-  const fetchOrder = async () => {
+  const fetchOrder = useCallback(async () => {
     try {
       const response = await fetch(`/api/orders/${params.id}`);
       if (!response.ok) throw new Error('Sipariş bulunamadı');
@@ -43,7 +43,7 @@ export default function OrderPage({ params }: { params: { id: string } }) {
     } catch (error) {
       console.error('Sipariş yüklenirken hata:', error);
     }
-  };
+  }, [params.id]);
 
   useEffect(() => {
     fetchOrder();
