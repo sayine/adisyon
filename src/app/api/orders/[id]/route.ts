@@ -2,20 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
 export async function GET(
   request: NextRequest,
-  props: Props
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const order = await Order.findById(props.params.id).populate('items.product');
-    
+    const order = await Order.findById(params.id).populate('items.product');
+
     if (!order) {
       return NextResponse.json(
         { error: 'Adisyon bulunamadı' },
@@ -35,14 +29,14 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  props: Props
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     await connectToDatabase();
     const body = await request.json();
-    
+
     const order = await Order.findByIdAndUpdate(
-      props.params.id,
+      params.id,
       { $set: body },
       { new: true }
     ).populate('items.product');
@@ -62,4 +56,4 @@ export async function PATCH(
       { status: 500 }
     );
   }
-} 
+}
