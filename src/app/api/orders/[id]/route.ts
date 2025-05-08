@@ -2,15 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
-export async function GET(
-  _request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
-
+export async function GET(req: NextRequest, { params }: any) {
   try {
     await connectToDatabase();
-    const order = await Order.findById(id).populate('items.product');
+    const order = await Order.findById(params.id).populate('items.product');
 
     if (!order) {
       return NextResponse.json({ error: 'Adisyon bulunamadı' }, { status: 404 });
@@ -19,24 +14,16 @@ export async function GET(
     return NextResponse.json(order);
   } catch (error) {
     console.error('Adisyon yüklenirken hata:', error);
-    return NextResponse.json(
-      { error: 'Adisyon yüklenirken bir hata oluştu' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Adisyon yüklenirken bir hata oluştu' }, { status: 500 });
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { id } = context.params;
-
+export async function PATCH(req: NextRequest, { params }: any) {
   try {
     await connectToDatabase();
-    const body = await request.json();
+    const body = await req.json();
 
-    const order = await Order.findByIdAndUpdate(id, { $set: body }, { new: true }).populate('items.product');
+    const order = await Order.findByIdAndUpdate(params.id, { $set: body }, { new: true }).populate('items.product');
 
     if (!order) {
       return NextResponse.json({ error: 'Adisyon bulunamadı' }, { status: 404 });
@@ -45,9 +32,6 @@ export async function PATCH(
     return NextResponse.json(order);
   } catch (error) {
     console.error('Adisyon güncellenirken hata:', error);
-    return NextResponse.json(
-      { error: 'Adisyon güncellenirken bir hata oluştu' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Adisyon güncellenirken bir hata oluştu' }, { status: 500 });
   }
 }
