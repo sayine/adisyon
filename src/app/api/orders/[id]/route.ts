@@ -9,7 +9,7 @@ export async function GET(
   try {
     await connectToDatabase();
     const order = await Order.findById(context.params.id).populate('items.product');
-
+    
     if (!order) {
       return NextResponse.json(
         { error: 'Adisyon bulunamadı' },
@@ -34,7 +34,7 @@ export async function PATCH(
   try {
     await connectToDatabase();
     const body = await request.json();
-
+    
     const order = await Order.findByIdAndUpdate(
       context.params.id,
       { $set: body },
