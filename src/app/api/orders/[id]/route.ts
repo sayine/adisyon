@@ -2,18 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
-type Context = {
-  params: {
-    id: string;
-  };
-};
-
-export async function GET(_req: NextRequest, context: Context) {
-  const { id } = context.params;
-
+export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectToDatabase();
-    const order = await Order.findById(id).populate('items.product');
+    const order = await Order.findById(params.id).populate('items.product');
 
     if (!order) {
       return NextResponse.json({ error: 'Adisyon bulunamadı' }, { status: 404 });
@@ -29,14 +21,16 @@ export async function GET(_req: NextRequest, context: Context) {
   }
 }
 
-export async function PATCH(req: NextRequest, context: Context) {
-  const { id } = context.params;
-
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     await connectToDatabase();
     const body = await req.json();
 
-    const order = await Order.findByIdAndUpdate(id, { $set: body }, { new: true }).populate('items.product');
+    const order = await Order.findByIdAndUpdate(
+      params.id,
+      { $set: body },
+      { new: true }
+    ).populate('items.product');
 
     if (!order) {
       return NextResponse.json({ error: 'Adisyon bulunamadı' }, { status: 404 });
