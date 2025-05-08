@@ -5,7 +5,7 @@ import Order from '@/models/Order';
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<Response> {
   try {
     await connectToDatabase();
     const order = await Order.findById(params.id).populate('items.product');
@@ -30,7 +30,7 @@ export async function GET(
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+): Promise<Response> {
   try {
     await connectToDatabase();
     const body = await request.json();
