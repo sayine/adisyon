@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
+type RouteParams = {
+  id: string;
+};
+
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  _request: NextRequest,
+  { params }: { params: RouteParams }
 ): Promise<Response> {
   try {
     await connectToDatabase();
@@ -29,7 +33,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: RouteParams }
 ): Promise<Response> {
   try {
     await connectToDatabase();
