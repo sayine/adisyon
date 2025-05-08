@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import type { NextPage } from 'next'; // Import NextPage for proper typing
 
 interface Product {
   _id: string;
@@ -26,7 +27,13 @@ interface Order {
   createdAt: string;
 }
 
-export default function OrderPage({ params }: { params: { id: string } }) {
+// Define the props type for the page
+type OrderPageProps = {
+  params: { id: string };
+};
+
+// Use NextPage to type the component
+const OrderPage: NextPage<OrderPageProps> = ({ params }) => {
   const [order, setOrder] = useState<Order | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -50,7 +57,7 @@ export default function OrderPage({ params }: { params: { id: string } }) {
   }, [fetchOrder]);
 
   useEffect(() => {
-    const uniqueCategories = Array.from(new Set(products.map(p => p.category)));
+    const uniqueCategories = Array.from(new Set(products.map((p) => p.category)));
     setCategories(uniqueCategories);
   }, [products]);
 
@@ -72,9 +79,9 @@ export default function OrderPage({ params }: { params: { id: string } }) {
   const addToOrder = async (product: Product) => {
     if (!order) return;
 
-    const existingItem = order.items.find(item => item.product._id === product._id);
+    const existingItem = order.items.find((item) => item.product._id === product._id);
     const updatedItems = existingItem
-      ? order.items.map(item =>
+      ? order.items.map((item) =>
           item.product._id === product._id
             ? { ...item, quantity: item.quantity + 1, price: item.product.price * (item.quantity + 1) }
             : item
@@ -103,7 +110,7 @@ export default function OrderPage({ params }: { params: { id: string } }) {
   const updateQuantity = async (productId: string, quantity: number) => {
     if (!order || quantity < 1) return;
 
-    const updatedItems = order.items.map(item =>
+    const updatedItems = order.items.map((item) =>
       item.product._id === productId
         ? { ...item, quantity, price: item.product.price * quantity }
         : item
@@ -131,7 +138,7 @@ export default function OrderPage({ params }: { params: { id: string } }) {
   const removeFromOrder = async (productId: string) => {
     if (!order) return;
 
-    const updatedItems = order.items.filter(item => item.product._id !== productId);
+    const updatedItems = order.items.filter((item) => item.product._id !== productId);
     const totalAmount = updatedItems.reduce((sum, item) => sum + item.price, 0);
 
     try {
@@ -175,9 +182,8 @@ export default function OrderPage({ params }: { params: { id: string } }) {
     }
   };
 
-  const filteredProducts = selectedCategory === 'all'
-    ? products
-    : products.filter(p => p.category === selectedCategory);
+  const filteredProducts =
+    selectedCategory === 'all' ? products : products.filter((p) => p.category === selectedCategory);
 
   if (!order) {
     return <div className="container mx-auto px-4 py-8">Yükleniyor...</div>;
@@ -199,15 +205,15 @@ export default function OrderPage({ params }: { params: { id: string } }) {
         {/* Ürün Listesi */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">Ürünler</h2>
-          
+
           <div className="mb-4">
-            <select
+            <mean
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="w-full p-2 border rounded"
             >
               <option value="all">Tüm Kategoriler</option>
-              {categories.map(category => (
+              {categories.map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>
@@ -216,7 +222,7 @@ export default function OrderPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {filteredProducts.map(product => (
+            {filteredProducts.map((product) => (
               <button
                 key={product._id}
                 onClick={() => addToOrder(product)}
@@ -232,13 +238,13 @@ export default function OrderPage({ params }: { params: { id: string } }) {
         {/* Adisyon Detayı */}
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4">Adisyon Detayı</h2>
-          
+
           {order.items.length === 0 ? (
             <p className="text-gray-500">Henüz ürün seçilmedi</p>
           ) : (
             <>
               <div className="space-y-4 mb-6">
-                {order.items.map(item => (
+                {order.items.map((item) => (
                   <div key={item.product._id} className="flex items-center justify-between">
                     <div>
                       <h3 className="font-medium">{item.product.name}</h3>
@@ -316,4 +322,6 @@ export default function OrderPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
-} 
+};
+
+export default OrderPage;
