@@ -4,9 +4,9 @@ import Order from '@/models/Order';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
-  const { id } = await params;
+  const { id } = context.params;
   
   try {
     await connectToDatabase();
@@ -33,7 +33,7 @@ export async function PATCH(
   request: Request,
   context: { params: { id: string } }
 ) {
-  const { id } = await context.params;
+  const { id } = context.params;
   
   try {
     await connectToDatabase();
