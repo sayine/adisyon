@@ -2,19 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import Order from '@/models/Order';
 
-interface RouteSegment {
-  params: {
-    id: string;
-  };
-}
-
 export async function GET(
   request: NextRequest,
-  segment: RouteSegment
-) {
+  { params }: { params: { id: string } }
+): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const order = await Order.findById(segment.params.id).populate('items.product');
+    const order = await Order.findById(params.id).populate('items.product');
     
     if (!order) {
       return NextResponse.json(
@@ -35,14 +29,14 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  segment: RouteSegment
-) {
+  { params }: { params: { id: string } }
+): Promise<NextResponse> {
   try {
     await connectToDatabase();
     const body = await request.json();
     
     const order = await Order.findByIdAndUpdate(
-      segment.params.id,
+      params.id,
       { $set: body },
       { new: true }
     ).populate('items.product');
