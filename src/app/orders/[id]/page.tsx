@@ -34,25 +34,29 @@ export default function OrderPage({ params }: { params: { id: string } }) {
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'creditCard'>('cash');
   const router = useRouter();
 
+  const fetchOrder = async () => {
+    try {
+      const response = await fetch(`/api/orders/${params.id}`);
+      if (!response.ok) throw new Error('Sipariş bulunamadı');
+      const data = await response.json();
+      setOrder(data);
+    } catch (error) {
+      console.error('Sipariş yüklenirken hata:', error);
+    }
+  };
+
   useEffect(() => {
     fetchOrder();
-    fetchProducts();
-  }, [params.id]);
+  }, [fetchOrder]);
 
   useEffect(() => {
     const uniqueCategories = Array.from(new Set(products.map(p => p.category)));
     setCategories(uniqueCategories);
   }, [products]);
 
-  const fetchOrder = async () => {
-    try {
-      const response = await fetch(`/api/orders/${params.id}`);
-      const data = await response.json();
-      setOrder(data);
-    } catch (error) {
-      console.error('Adisyon yüklenirken hata oluştu:', error);
-    }
-  };
+  useEffect(() => {
+    fetchProducts();
+  }, [params.id]);
 
   const fetchProducts = async () => {
     try {

@@ -1,27 +1,22 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/adisyon';
+const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env');
 }
 
-interface MongooseCache {
+interface Cached {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
 
-declare global {
-  var mongoose: MongooseCache | undefined;
-}
+const cached: Cached = {
+  conn: null,
+  promise: null,
+};
 
-let cached = global.mongoose || { conn: null, promise: null };
-
-if (!global.mongoose) {
-  global.mongoose = cached;
-}
-
-async function connectDB() {
+export async function connectToDatabase() {
   if (cached.conn) {
     return cached.conn;
   }
@@ -44,6 +39,4 @@ async function connectDB() {
   }
 
   return cached.conn;
-}
-
-export default connectDB; 
+} 
