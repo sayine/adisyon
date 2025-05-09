@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { NextPage } from 'next'; // Import NextPage for proper typing
 
 interface Product {
   _id: string;
@@ -27,13 +26,11 @@ interface Order {
   createdAt: string;
 }
 
-// Define the props type for the page
 type OrderPageProps = {
   params: { id: string };
 };
 
-// Use NextPage to type the component
-const OrderPage: NextPage<OrderPageProps> = ({ params }) => {
+export default function OrderPage({ params }: OrderPageProps) {
   const [order, setOrder] = useState<Order | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -322,6 +319,4 @@ const OrderPage: NextPage<OrderPageProps> = ({ params }) => {
       </div>
     </div>
   );
-};
-
-export default OrderPage;
+}
